@@ -1,0 +1,147 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Tameenak Prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600&family=Manrope:wght@400;600&display=swap">
+<style>
+/* Layout: one phone frame centred on a quiet page; every screen is rendered inside it by a tiny state router. Single light look, matching the Figma design. */
+:root{--blue:#1746F4;--ink:#111318;--grey:#6B6F76;--line:#D9DDE6;--page:#EEF1F8;--card:#fff;--flexi:#E3E0E1;--gold:#E2C9A2;--plat:#A3D9D1;--ok:#1E9E4A;--warn:#B58900;
+--display:'Teko','Arial Narrow',sans-serif;--body:'Manrope',system-ui,sans-serif}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font-family:var(--body);font-size:14px;margin:0}
+.wrap{padding-inline:16px;padding-block:20px 28px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.top{text-align:center;max-width:390px}
+.top b{font-family:var(--display);font-size:26px;font-weight:600;line-height:1}
+.top p{margin:2px 0 0;color:var(--grey);font-size:12.5px}
+.phone{width:min(100%,390px);height:760px;background:var(--card);border-radius:34px;border:1px solid var(--line);box-shadow:0 18px 40px rgba(23,70,244,.12);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.bar{display:flex;align-items:center;height:44px;padding:0 14px;flex:none}
+.back{border:0;background:none;font-size:24px;line-height:1;color:var(--ink);cursor:pointer;padding:4px 10px;border-radius:8px}
+.scr{flex:1;overflow-y:auto;padding:4px 18px 18px;display:flex;flex-direction:column;gap:12px}
+h1{font-family:var(--display);font-weight:600;font-size:30px;line-height:1.05;margin:0;color:#55585E;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:24px;line-height:1.1;margin:0}
+.sub{color:var(--grey);font-size:12.5px;margin:0}
+.center{align-items:center;justify-content:center;text-align:center}
+.grow{flex:1}
+.btn{font-family:var(--display);font-weight:600;font-size:26px;line-height:1;color:#fff;background:var(--blue);border:0;border-radius:40px;padding:12px 34px 9px;cursor:pointer;align-self:center}
+.btn.sm{font-size:18px;padding:8px 20px 6px}
+.btn.ghost{background:none;color:var(--blue);font-family:var(--body);font-size:14px;font-weight:600;padding:6px}
+button:focus-visible,input:focus-visible,select:focus-visible,[data-go]:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+input,select{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--ink);border-radius:10px;background:#fff;color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 3px 10px rgba(17,19,24,.10);padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.card.off{opacity:.45;pointer-events:none}
+.card small,.tier small{display:block;color:var(--grey);font-size:12px;line-height:1.5}
+.mark{flex:none;width:58px;height:58px;border-radius:14px;background:var(--blue);color:#fff;font-family:var(--display);font-size:30px;display:grid;place-items:center;padding-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid .card{flex-direction:column;justify-content:center;text-align:center;gap:6px;min-height:92px;font-family:var(--display);font-size:19px;font-weight:600;line-height:1.05}
+.ic{width:34px;height:34px;stroke:var(--blue);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tier{border-radius:12px;padding:10px 14px;cursor:pointer;border:0;text-align:left;font:inherit;color:inherit;width:100%}
+.tier h2{text-align:center}
+.tier.flexi{background:var(--flexi)}.tier.gold{background:var(--gold)}.tier.plat{background:var(--plat)}
+.tier small{color:#4A4D52}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+.cols>div{display:flex;flex-direction:column;gap:10px;min-width:0}
+.yes{color:var(--ok);font-weight:600}.no{color:#C62828;font-weight:600}
+.addons{display:grid;gap:8px}
+.addons label{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--ink);border-radius:10px;padding:9px 12px;cursor:pointer}
+.addons input{width:18px;height:18px;flex:none}
+.total{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.total b{font-family:var(--display);font-size:28px;font-weight:600;line-height:1;color:#55585E;font-variant-numeric:tabular-nums}
+.nav{flex:none;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);padding:8px 0 12px}
+.nav button{border:0;background:none;font:600 11px var(--body);color:var(--grey);cursor:pointer;padding:6px}
+.nav button.on{color:var(--blue)}
+.pill{font-family:var(--display);font-size:18px;font-weight:600;margin-left:auto;align-self:flex-start}
+.pill.Active{color:var(--ok)}.pill.Pending{color:var(--warn)}
+.otp{display:flex;gap:10px;justify-content:center}.otp input{width:48px;height:56px;text-align:center;font-size:20px}
+.dots{display:flex;gap:6px;justify-content:center}.dots i{width:22px;height:3px;border-radius:2px;background:var(--line)}.dots i.on{background:var(--blue)}
+.doc{border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px}
+.doc span{color:var(--grey)}
+.toast{position:absolute;left:16px;right:16px;bottom:76px;background:var(--ink);color:#fff;border-radius:10px;padding:10px 12px;font-size:12.5px;text-align:center}
+.grad{background:linear-gradient(#fff 10%,#9DB0FA)}
+@media (prefers-reduced-motion:no-preference){.scr{animation:in .18s ease-out}@keyframes in{from{opacity:.4;transform:translateY(6px)}}}
+</style>
+
+<div class="wrap">
+  <div class="top"><b>Tameenak</b><p>Clickable prototype with sample data. Nothing is saved, sent, or charged.</p></div>
+  <div class="phone" id="phone"></div>
+</div>
+
+<script>
+// ---- sample data (placeholders, not real insurers or prices) ----
+const FEE = 7;
+const PROVIDERS = [
+  {id:'A', name:'Insurer A', flexi:50, gold:105, plat:145, flexiRoad:true, goldAgency:'Optional'},
+  {id:'B', name:'Insurer B', flexi:55, gold:99,  plat:130},
+  {id:'C', name:'Insurer C', flexi:60, gold:110, plat:150},
+  {id:'D', name:'Insurer D', flexi:70, gold:120, plat:160},
+];
+const TIERS = {flexi:'Flexi', gold:'Gold', plat:'Platinum'};
+const ADDONS = [['Car Replacement',25],['Personal Accident Cover',20],['Natural Perils',30]];
+const TYPES = ['Car','Health','Travel','Property','Life & family','Business','Gadget & electronic'];
+const st = {scr:'ob1', hist:[], prov:null, cmp:null, tier:null, add:new Set(), car:'Mazda, CX-3', plate:'98745',
+  orders:[{prov:'B', tier:'gold', car:'Toyota, Camry', plate:'112233', from:'05/10/24', to:'04/10/25', status:'Active'}]};
+
+const P = id => PROVIDERS.find(p => p.id === id);
+const feats = (p, t) => ({
+  cover: t === 'flexi' ? 'Third-party only' : 'Comprehensive',
+  agency: t === 'flexi' ? false : (t === 'gold' && p.goldAgency) || true,
+  road: t !== 'flexi' || !!p.flexiRoad,
+  repl: t === 'plat',
+});
+const yn = (v, short) => v === true ? `<span class="yes">${short ? '&#10003;' : 'Included'}</span>` : v === false ? `<span class="no">${short ? '&#10007;' : 'Not included'}</span>` : v;
+const total = () => P(st.prov)[st.tier] + FEE + [...st.add].reduce((s, i) => s + ADDONS[i][1], 0);
+const icon = '<svg class="ic" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>';
+const provCard = (p, go, off) => `<button class="card${off ? ' off' : ''}" data-act="${go}" data-id="${p.id}"><span class="mark">${p.id}</span><span><h2>${p.name}</h2><small>Plan types: Flexi, Gold &amp; Platinum<br>Add-ons available<br>Starts from: ${p.flexi} BD</small></span></button>`;
+const tierCard = (p, t, s) => { const f = feats(p, t); return `<button class="tier ${t}" data-act="pick" data-id="${p.id}" data-tier="${t}"><h2>${TIERS[t]}</h2><small>Coverage: ${f.cover}<br>Agency repair: ${yn(f.agency, s)}<br>Roadside assistance: ${yn(f.road, s)}<br>Car replacement: ${yn(f.repl, s)}<br><b>Price: ${p[t]} BD</b></small></button>`; };
+const field = (id, ph, opts) => opts ? `<select id="${id}" aria-label="${ph}">${opts.map(o => `<option>${o}</option>`).join('')}</select>` : `<input id="${id}" placeholder="${ph}" aria-label="${ph}">`;
+const onboard = (n, text, next) => `<div class="scr center"><div class="grow"></div><svg class="ic" style="width:110px;height:110px" viewBox="0 0 24 24"><path d="M5 5a10 10 0 1 1-2 6"/><path d="M12 8v4l3 2"/></svg><h1 style="margin-top:40px">${text}</h1><div class="grow"></div><button class="btn" data-go="${next}">Continue</button><div class="dots"><i class="${n==1?'on':''}"></i><i class="${n==2?'on':''}"></i><i></i></div></div>`;
+
+const SCREENS = {
+  ob1: () => onboard(1, 'Save time and money with instant quotes from top insurers', 'ob2'),
+  ob2: () => onboard(2, 'Compare insurance policies in real time', 'start'),
+  start: () => `<div class="scr center grad"><div class="grow"></div><h1>Get Started</h1><div class="grow"></div><button class="btn" data-go="signup">Sign up</button><button class="btn" data-go="home">Log in</button><div class="grow"></div><div class="dots"><i></i><i></i><i class="on"></i></div></div>`,
+  signup: () => `<div class="scr"><h1 style="text-align:center">Create Account</h1>${['CPR','Name','Email','Phone Number','Password','Confirm Password'].map((f,i)=>field('su'+i,f)).join('')}<div class="grow"></div><button class="btn" data-go="otp">Sign up</button></div>`,
+  otp: () => `<div class="scr center"><h1>Enter the OTP sent on this number</h1><h1>+973 3333 3333</h1><div class="otp">${[0,1,2,3].map(i=>`<input id="otp${i}" maxlength="1" inputmode="numeric" aria-label="Digit ${i+1}">`).join('')}</div><div class="grow"></div><button class="btn" data-go="home">Verify</button><div class="grow"></div></div>`,
+  home: () => `<div class="scr"><h1>Hi Jaafar,<br>Welcome back!</h1><p class="sub">Explore the best plans available:</p>${['Car','Health','Travel'].map(t=>`<div class="card" style="cursor:default"><span style="flex:1"><h2>${t} Insurance</h2><small>Know more about insuring your ${t=='Car'?'car':t=='Health'?'health':'trip'}</small><button class="btn sm" style="margin-top:8px" data-act="type" data-id="${t}">Explore Now</button></span>${icon}</div>`).join('')}</div>`,
+  types: () => `<div class="scr"><h1>Select an Insurance Type</h1><p class="sub">Choose what you want to insure and compare available plans.</p><div class="grid">${TYPES.map(t=>`<button class="card" data-act="type" data-id="${t}">${icon}${t} Insurance</button>`).join('')}</div></div>`,
+  quote: () => `<div class="scr"><h1>Get your car insurance quote</h1><p class="sub">Please fill out the fields</p>${field('q0','Make',['Mazda','Toyota','Nissan','Honda'])}${field('q1','Car Model',['CX-3','Camry','Patrol','Civic'])}${field('q2','Manufacturing Year',['2024','2023','2022','2021','2020'])}${field('q3','Vehicle Value (BD)')}${field('q4','Chassis Number')}${field('q5','Plate type',['Private','Commercial'])}${field('q6','Plate number')}${field('q7','Registration month',['January','April','July','October'])}${field('q8','Insurance start date',['Today','Next week','Next month'])}<button class="btn" data-go="providers" style="margin-top:6px">Continue</button></div>`,
+  providers: () => `<div class="scr"><h1>Choose your insurance company:</h1>${PROVIDERS.map(p=>provCard(p,'prov')).join('')}</div>`,
+  plans: () => { const p = P(st.prov); return `<div class="scr"><div class="card" style="justify-content:center;cursor:default"><span class="mark">${p.id}</span><h2>${p.name}</h2></div>${Object.keys(TIERS).map(t=>tierCard(p,t)).join('')}<button class="btn sm" data-go="cmpPick">Compare</button></div>`; },
+  cmpPick: () => `<div class="scr"><h1>Choose insurance company to compare with:</h1>${PROVIDERS.map(p=>provCard(p,'cmp',p.id===st.prov)).join('')}</div>`,
+  compare: () => `<div class="scr"><div class="cols">${[st.prov,st.cmp].map(id=>{const p=P(id);return `<div><div class="card" style="flex-direction:column;cursor:default"><span class="mark">${p.id}</span><h2>${p.name}</h2></div>${Object.keys(TIERS).map(t=>tierCard(p,t,1)).join('')}</div>`}).join('')}</div><button class="btn sm" data-go="cmpPick">Change</button></div>`,
+  detail: () => { const p = P(st.prov), f = feats(p, st.tier); return `<div class="scr"><div class="card" style="justify-content:center;cursor:default"><span class="mark">${p.id}</span><h2>${p.name}</h2></div><div class="tier ${st.tier}" style="cursor:default"><h2>${TIERS[st.tier]} Option</h2><small>Coverage: ${f.cover}<br>Agency repair: ${yn(f.agency)}<br>Roadside assistance: ${yn(f.road)}<br>Car replacement: ${yn(f.repl)}<br>Duration: 1 year<br><br>Base price: ${p[st.tier]} BD<br>Service fee: ${FEE} BD</small></div><h2>Add-ons</h2><div class="addons">${ADDONS.map(([n,c],i)=>`<label for="ad${i}"><span>${n} <small style="color:var(--grey)">+${c} BD</small></span><input type="checkbox" id="ad${i}" data-add="${i}" ${st.add.has(i)?'checked':''}></label>`).join('')}</div><div class="grow"></div><div class="total"><b>Total<br><span id="tot">${total()}</span> BD</b><button class="btn" style="align-self:auto" data-go="pay">Buy now</button></div></div>`; },
+  pay: () => `<div class="scr"><h1 style="text-align:center">Payment Gateway</h1><h1 style="text-align:center;font-size:48px">${total()} BD</h1><p class="sub">Pay with card. Demo only: do not enter real card details.</p>${field('c0','Card Number')}${field('c1','Name on card')}<div class="cols">${field('c2','Expiry')}${field('c3','CVV')}</div><div class="grow"></div><button class="btn" data-act="payNow">Pay</button></div>`,
+  success: () => `<div class="scr center"><div class="grow"></div><h1>Request successful</h1><p class="sub">You will get a notification once the document is ready</p><svg class="ic" style="width:110px;height:110px;margin:24px 0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg><div class="grow"></div><button class="btn ghost" data-go="orders">View Order</button><button class="btn" data-go="home">Done</button></div>`,
+  orders: () => `<div class="scr"><h1 style="text-align:center">Orders</h1>${st.orders.map((o,i)=>`<button class="card" data-act="order" data-id="${i}"><span class="mark">${o.prov}</span><span><h2>Car Insurance</h2><small>Plan type: ${TIERS[o.tier]}<br>Car: ${o.car}<br>Plate number: ${o.plate}<br>Start date: ${o.from}<br>End date: ${o.to}</small></span><span class="pill ${o.status}">${o.status}</span></button>`).join('')}</div>`,
+  doc: () => { const o = st.orders[st.order], p = P(o.prov); return `<div class="scr"><h1 style="text-align:center">${o.car}<br>Car Insurance</h1><div class="doc"><span>Provider</span><b>${p.name}</b><span>Plan</span><b>${TIERS[o.tier]}</b><span>Coverage</span><b>${feats(p,o.tier).cover}</b><span>Plate number</span><b>${o.plate}</b><span>Period</span><b>${o.from} to ${o.to}</b><span>Status</span><b>${o.status}</b></div><p class="sub">Sample policy summary. A live version would show the insurer's issued document here.</p><div class="grow"></div><button class="btn" data-act="dl">Download</button></div>`; },
+};
+const TABS = {home:'Home', types:'Policies', orders:'Orders'};
+const NOBACK = ['ob1','home','types','orders','success'];
+
+function render(msg) {
+  const tabs = st.scr in TABS ? `<div class="nav">${Object.entries(TABS).map(([k,v])=>`<button class="${k===st.scr?'on':''}" data-tab="${k}">${v}</button>`).join('')}</div>` : '';
+  const back = NOBACK.includes(st.scr) ? '' : '<button class="back" data-act="back" aria-label="Back">&#8249;</button>';
+  document.getElementById('phone').innerHTML = `<div class="bar">${back}</div>${SCREENS[st.scr]()}${tabs}${msg ? `<div class="toast" role="status">${msg}</div>` : ''}`;
+}
+function go(s, msg) { st.hist.push(st.scr); st.scr = s; render(msg); }
+
+document.getElementById('phone').addEventListener('click', e => {
+  const t = e.target.closest('[data-go],[data-act],[data-tab]'); if (!t) return;
+  const {go: g, act, tab, id, tier} = t.dataset;
+  if (tab) { st.hist = []; st.scr = tab; return render(); }
+  if (g) return go(g);
+  if (act === 'back') { st.scr = st.hist.pop() || 'home'; return render(); }
+  if (act === 'type') return id === 'Car' ? go('quote') : render('Only car insurance is designed in this prototype.');
+  if (act === 'prov') { st.prov = id; return go('plans'); }
+  if (act === 'cmp') { st.cmp = id; return go('compare'); }
+  if (act === 'pick') { st.prov = id; st.tier = tier; st.add.clear(); return go('detail'); }
+  if (act === 'payNow') { st.orders.unshift({prov: st.prov, tier: st.tier, car: st.car, plate: st.plate, from: '05/05/25', to: '04/05/26', status: 'Pending'}); st.hist = []; st.scr = 'success'; return render(); }
+  if (act === 'order') { const o = st.orders[id]; if (o.status !== 'Active') return render('The document is not ready yet for a pending order.'); st.order = +id; return go('doc'); }
+  if (act === 'dl') return render('Download is not available in this demo.');
+});
+document.getElementById('phone').addEventListener('change', e => {
+  const i = e.target.dataset.add; if (i === undefined) return;
+  e.target.checked ? st.add.add(+i) : st.add.delete(+i);
+  document.getElementById('tot').textContent = total();
+});
+render();
+</script>
+
+</body></html>
